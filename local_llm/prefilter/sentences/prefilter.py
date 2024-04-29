@@ -65,7 +65,7 @@ def classify_sentencess_df(sentence, rna_id, model):
     dataframe
     """
 
-    r = classify_sentence(sentence, rna_id, model=model, output_writer=lmql.printing)
+    r = classify_sentence(sentence, rna_id, model=model)
     input("continue?")
     return r.variables["P(CLS)"][0][1]
 
