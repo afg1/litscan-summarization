@@ -66,7 +66,6 @@ def classify_sentencess_df(sentence, rna_id, model):
     """
 
     r = classify_sentence(sentence, rna_id, model=model)
-    input("continue?")
     return r.variables["P(CLS)"][0][1]
 
 
