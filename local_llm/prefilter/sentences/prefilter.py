@@ -51,7 +51,7 @@ def classify_sentence(sentence, rna_id):
     ###
     Is the sentence demarcated by ### interesting to ncRNA scientists? Does it provide useful information about {rna_id}? If so, state why in a single sentence.<|end|>
     <|assistant|>[ANALYSIS]
-    """ where len(TOKENS(ANALYSIS)) < 256 STOPS_AT(ANALYSIS, "<|end|>")
+    """ where len(TOKENS(ANALYSIS)) < 256 and STOPS_AT(ANALYSIS, "<|end|>")
 
     """Therefore, in the context of ncRNA this sentence is
     [CLS]""" distribution CLS in ["interesting", "not interesting"]
