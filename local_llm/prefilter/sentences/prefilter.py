@@ -23,7 +23,7 @@ def write_output(evaluated: dict[str, list], output: str) -> None:
     output_loc = Path(f"{output}")
     if output_loc.exists():
         existing = pl.read_parquet(output_loc)
-        df = existing.vstack(df).unique("pmcid")
+        df = existing.vstack(df).unique()
     df.write_parquet(output)
 
 
@@ -65,8 +65,10 @@ def classify_sentencess_df(sentence, rna_id, model):
     dataframe
     """
 
-    r = classify_sentence(sentence, rna_id, model=model)
-    return r.variables["P(CLS)"][0][1]
+    r = classify_sentence(sentence, rna_id, model=model, output_writer=lmql.printing)
+    relevance = r.variables["P(CLS)"][0][1]
+    reasoning = r.variables["ANALYSIS"].replace("<|end|>", "").strip()
+    return relevance, reasoning
 
 
 QUERY = """select
@@ -176,6 +178,8 @@ def main(
     print(sentences.select(pl.col("n_tokens").sum()))
 
     classified_pmcids = []
+    classified_sentences = []
+    reasoning_traces = []
     relevant_probability = []
     for idx, paper in tqdm(
         enumerate(sentences.iter_rows(named=True)), total=sentences.height
@@ -184,14 +188,18 @@ def main(
         pmcid = paper["pmcid"]
         rna_id = paper["job_id"]
 
-        rel_prob = classify_sentencess_df(sentence, rna_id, model)
+        rel_prob, reasoning = classify_sentencess_df(sentence, rna_id, model)
 
         classified_pmcids.append(pmcid)
+        classified_sentences.append(sentence)
+        reasoning_traces.append(reasoning)
         relevant_probability.append(rel_prob)
 
         if idx % checkpoint_frequency == 0:
             evaluated = {
                 "pmcid": classified_pmcids,
+                "sentence": classified_sentences,
+                "reasoning": reasoning_traces,
                 "relevance_probability": relevant_probability,
             }
             write_output(evaluated, output)
@@ -202,6 +210,8 @@ def main(
     ## Finished, so write everything else
     evaluated = {
         "pmcid": classified_pmcids,
+        "sentence": classified_sentences,
+        "reasoning": reasoning_traces,
         "relevance_probability": relevant_probability,
     }
     write_output(evaluated, output)
