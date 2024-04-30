@@ -208,6 +208,8 @@ def main(
             ## Reset accumulating lists
             classified_pmcids = []
             relevant_probability = []
+            reasoning_traces = []
+            classified_sentences = []
 
     ## Finished, so write everything else
     evaluated = {
