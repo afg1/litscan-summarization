@@ -65,7 +65,9 @@ def classify_sentencess_df(sentence, rna_id, model):
     dataframe
     """
 
-    r = classify_sentence(sentence, rna_id, model=model, output_writer=lmql.printing)
+    r = classify_sentence(
+        sentence, rna_id, model=model
+    )  # , output_writer=lmql.printing)
     relevance = r.variables["P(CLS)"][0][1]
     reasoning = r.variables["ANALYSIS"].replace("<|end|>", "").strip()
     return relevance, reasoning
