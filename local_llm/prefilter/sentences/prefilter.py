@@ -53,8 +53,11 @@ def classify_sentence(sentence, rna_id):
     <|assistant|>[ANALYSIS]
     """ where len(TOKENS(ANALYSIS)) < 256 and STOPS_AT(ANALYSIS, "<|end|>")
 
-    """Therefore, in the context of ncRNA this sentence is
-    [CLS]""" distribution CLS in ["interesting", "not interesting"]
+    """Is this sentence interesting?
+    Options:
+    - yes
+    - no<|end|>
+    <|assistant|>[CLS]""" distribution CLS in ["yes", "no"]
 
     '''
 
